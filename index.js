@@ -59,16 +59,16 @@ module.exports = async function makeIndexFetch (opts = {}) {
       if(mainURL.hostname === '_'){
         return {status: 200, headers: {'Content-Type': 'text/plain; charset=utf-8'}, body: 'running'}
       }
-      
-    const useLink = request.url.replace('lnt', 'http')
+
+    const useLink = request.url.replace('lok', 'http')
     delete request.url
     const mainTimeout = reqHeaders.has('x-timer') || mainURL.searchParams.has('x-timer') ? reqHeaders.get('x-timer') !== '0' || mainURL.searchParams.get('x-timer') !== '0' ? Number(reqHeaders.get('x-timer') || mainURL.searchParams.get('x-timer')) * 1000 : undefined : useTimeOut
     
     return sendTheData(signal, await handleData(mainTimeout, nodeFetch(useLink, request)))
   }
 
-  router.any('lnt://*/**', handleLayer)
-  router.any('lnts://*/**', handleLayer)
+  router.any('lok://*/**', handleLayer)
+  router.any('loks://*/**', handleLayer)
 
   return fetch
 }
