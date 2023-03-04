@@ -1,9 +1,13 @@
-module.exports = async function makeIndexFetch (opts = {}) {
+module.exports = async function makeOnionFetch (opts = {}) {
   const { makeRoutedFetch } = await import('make-fetch')
   const {fetch, router} = makeRoutedFetch({onNotFound: handleEmpty, onError: handleError})
   const { default: nodeFetch } = await import('node-fetch')
+  // const detect = require('detect-port')
+  // const SocksProxyAgent = require('socks-proxy-agent').SocksProxyAgent
   const finalOpts = { timeout: 30000, ...opts }
+  // const mainPort = finalOpts.port || 9077
   const useTimeOut = finalOpts.timeout
+  // const mainAgent = new SocksProxyAgent(`socks5h://127.0.0.1:${mainPort}`)
 
   function handleEmpty(request) {
     const { url, headers: reqHeaders, method, body, signal } = request
@@ -48,27 +52,40 @@ module.exports = async function makeIndexFetch (opts = {}) {
     return theData
   }
 
-  async function handleLayer(request) {
+// function useAgent(_parsedURL) {
+// 		if (_parsedURL.protocol === 'http:' || _parsedURL.protocol === 'https:') {
+// 			return mainAgent
+// 		} else {
+//       throw new Error('protocol is not valid')
+//     }
+// 	}
+
+  async function handleLok(request) {
     const { url, method, headers: reqHeaders, body, signal, referrer } = request
 
     if(signal){
       signal.addEventListener('abort', takeCareOfIt)
     }
+
     const mainURL = new URL(url)
 
       if(mainURL.hostname === '_'){
+        // const detectedPort = await detect(mainPort)
+        // const isItRunning = mainPort !== detectedPort
+        // return {status: 200, headers: {'Content-Type': 'text/plain; charset=utf-8'}, body: String(isItRunning)}
         return {status: 200, headers: {'Content-Type': 'text/plain; charset=utf-8'}, body: 'running'}
-      }
+    }
 
+    // request.agent = useAgent
     const useLink = request.url.replace('lok', 'http')
     delete request.url
     const mainTimeout = reqHeaders.has('x-timer') || mainURL.searchParams.has('x-timer') ? reqHeaders.get('x-timer') !== '0' || mainURL.searchParams.get('x-timer') !== '0' ? Number(reqHeaders.get('x-timer') || mainURL.searchParams.get('x-timer')) * 1000 : undefined : useTimeOut
     
     return sendTheData(signal, await handleData(mainTimeout, nodeFetch(useLink, request)))
   }
-
-  router.any('lok://*/**', handleLayer)
-  router.any('loks://*/**', handleLayer)
+  
+  router.any('lok://*/**', handleLok)
+  router.any('loks://*/**', handleLok)
 
   return fetch
 }
