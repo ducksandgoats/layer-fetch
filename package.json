@@ -1,6 +1,6 @@
 {
   "name": "layer-fetch",
-  "version": "23.0.7",
+  "version": "23.0.8",
   "description": "",
   "main": "index.js",
   "scripts": {
