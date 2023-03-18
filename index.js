@@ -67,7 +67,7 @@ module.exports = async function makeOnionFetch (opts = {}) {
       signal.addEventListener('abort', takeCareOfIt)
     }
 
-    const mainURL = new URL(url)
+    const mainURL = new URL(url.replace('lok', 'http'))
 
       if(mainURL.hostname === '_'){
         // const detectedPort = await detect(mainPort)
@@ -77,7 +77,6 @@ module.exports = async function makeOnionFetch (opts = {}) {
     }
 
     // request.agent = useAgent
-    mainURL.protocol = mainURL.protocol.replace('lok', 'http')
     delete request.url
     const mainTimeout = reqHeaders.has('x-timer') || mainURL.searchParams.has('x-timer') ? reqHeaders.get('x-timer') !== '0' || mainURL.searchParams.get('x-timer') !== '0' ? Number(reqHeaders.get('x-timer') || mainURL.searchParams.get('x-timer')) * 1000 : undefined : useTimeOut
     
